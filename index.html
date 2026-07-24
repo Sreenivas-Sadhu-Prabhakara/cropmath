@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/cropmath/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A free cost of cultivation per acre calculator. Enter your seed, fertiliser, labour, diesel and rent, plus expected yield, and get your cost per quintal, break-even price and return on cost. No MSP or market data — every number is your own. Local-first and private; this demo stores nothing.">
+
+  <meta property="og:title" content="Cost of Cultivation Per Acre Calculator — cropmath">
+  <meta property="og:description" content="Type your per-acre input costs and your yield; get cost per quintal, break-even price and margin against a sale price you set yourself. Private, offline, no market data.">
+  <meta property="og:type" content="website">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="cropmath">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>Cost of Cultivation Per Acre Calculator — cropmath</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif; }
+    #seo-landing { max-width: 780px; margin: 0 auto; padding: 24px 20px 8px; line-height: 1.55;
+      color: #2A2016; background: #F6EEDD; }
+    #seo-landing h1 { font-size: 1.55rem; color: #2F6D2A; margin: 0 0 8px; }
+    #seo-landing h2 { font-size: 1.05rem; margin: 20px 0 6px; }
+    #seo-landing code { background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 4px;
+      font-variant-numeric: tabular-nums; }
+    #seo-landing .furrows { height: 8px; background: repeating-linear-gradient(
+      180deg, #6B5B47 0 2px, transparent 2px 6px); border-bottom: 3px solid #2F6D2A; margin: 14px 0; }
+    #flutter-app { height: 82vh; min-height: 520px; border-top: 3px solid #2F6D2A; }
+    @media (prefers-color-scheme: dark) {
+      #seo-landing { color: #EFE6D6; background: #1E1811; }
+      #seo-landing h1 { color: #7BC36E; }
+      #seo-landing code { background: rgba(255,255,255,0.12); }
+      #seo-landing .furrows { background: repeating-linear-gradient(
+        180deg, #B6A489 0 2px, transparent 2px 6px); border-bottom-color: #7BC36E; }
+    }
+  </style>
+
+  <!-- Crawlable structured data: the Flutter canvas is not indexable, so the
+       facts live in real HTML + JSON-LD. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "cropmath",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web, Windows, macOS, Linux, Android, iOS",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+    "description": "Work out your cost of cultivation per acre: enter per-acre input costs and expected yield to get cost per quintal, break-even price and return on cost. No market-price data; the sale price is user-entered."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I calculate the cost of cultivation per acre?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Add up every input cost for one acre — seed, fertiliser, labour, diesel, rent and anything else — to get your total cost per acre. Divide that total by your expected yield in quintals to get the cost per quintal. cropmath does this arithmetic exactly on the numbers you enter; it never assumes a cost or a yield for you." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the break-even price per quintal?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Your break-even price is identical to your cost per quintal: total cost divided by yield. That is the price you must beat to avoid a loss. It is math on your own figures, not a market forecast — cropmath makes no price prediction." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does cropmath use MSP or mandi prices?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. cropmath ships no MSP, mandi or any market-price data. The sale price is always whatever you expect to receive and type in yourself; every profit and margin figure is computed against that user-entered price." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use bigha, ground, kanal or another local unit?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. acre and hectare ship built-in, and you can define your own local unit by naming it and setting how many acres it equals. A bigha varies by locality, so cropmath never assumes its size — you set it. Cost per quintal comes out the same whatever unit you enter." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is this agronomy advice?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. cropmath does no agronomy and recommends no price, yield, seed rate or input. It is a calculator: it turns the costs and yield you enter into cost per quintal, break-even and return on cost, and nothing more." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my data private?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The full app is local-first: your data lives in a SQLite file on your own machine and runs on localhost. This web demo stores nothing on any server — the sample numbers and anything you type stay in your browser tab and clear when you close it." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <main id="seo-landing">
+    <h1>Work out your real cost of cultivation per acre.</h1>
+    <div class="furrows" aria-hidden="true"></div>
+    <p><strong>cropmath</strong> is a free <strong>cost of cultivation per acre
+    calculator</strong>. Type your per-acre input costs — seed, fertiliser,
+    labour, diesel, rent — plus your expected yield, and it tells you what a
+    quintal actually costs you to grow: your <strong>cost per quintal</strong>,
+    your <strong>break-even price</strong>, and your <strong>return on cost</strong>
+    against a sale price you set yourself. No MSP, no mandi data, no advice —
+    every number is your own.</p>
+
+    <h2>How the calculation works</h2>
+    <p>Total cost per acre = seed + fertiliser + labour + diesel + rent + other.
+    Then <code>cost per quintal = total cost ÷ yield</code>. Your break-even
+    price is that same figure — the price you must beat. If you enter a sale
+    price, cropmath also shows profit per acre, margin per quintal, break-even
+    yield, and <code>return on cost = profit ÷ money spent</code>.</p>
+
+    <h2>Worked example (illustrative — made-up numbers)</h2>
+    <p>Costs of <code>₹2,200 + ₹4,800 + ₹6,500 + ₹3,000 + ₹8,000 + ₹1,500 =
+    ₹26,000</code> per acre, with an expected yield of <code>20</code> quintals,
+    gives a cost per quintal and break-even price of <code>₹1,300.00</code>. At a
+    sale price you expect of <code>₹2,000</code>, that is a margin of
+    <code>₹700</code> per quintal and a return on cost of <code>53.85%</code>.
+    These are made-up figures to show the method, not a typical yield or price.</p>
+
+    <h2>Local units, and what cropmath will never do</h2>
+    <p>acre and hectare are built in; add your own bigha, ground or kanal and set
+    its size in acres yourself — cropmath never hardcodes a local unit. It carries
+    no market prices, no benchmark yields, and no agronomy: it is arithmetic on
+    the numbers you enter, kept private on your own machine.</p>
+
+    <h2>Try it below</h2>
+    <p>The calculator below is loaded with made-up sample plots. Edit them or
+    enter your own — nothing you type leaves this page.</p>
+  </main>
+
+  <div id="flutter-app"></div>
+
+  <script src="flutter.js" defer></script>
+  <script>
+    window.addEventListener('load', function () {
+      _flutter.loader.load({
+        onEntrypointLoaded: async function (engineInitializer) {
+          const appRunner = await engineInitializer.initializeEngine({
+            hostElement: document.getElementById('flutter-app')
+          });
+          await appRunner.runApp();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
